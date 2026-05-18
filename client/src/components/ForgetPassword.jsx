@@ -36,11 +36,11 @@ const ForgotPassword = () => {
     <section className="login-section">
      <div className="login-container">
        <div className="login-image">
-        <img src={forgotPic} alt="Forgot image" />
+        <img src={forgotPic} alt="Forgot Password" />
       </div>
       <div className="login-card">
           <form className="login-form" onSubmit={handleSubmit}>
-            <h1>Forgot Your Password</h1>
+            <h1>Forgot Your Password?</h1>
             
             <div style={{ backgroundColor: "rgba(255, 77, 109, 0.1)", border: "1px solid var(--primary-red)", padding: "10px", borderRadius: "8px", marginBottom: "15px", fontSize: "0.85rem", color: "white" }}>
               <strong style={{color: "var(--primary-red)"}}>Note:</strong> Reset emails are sent via Nodemailer. Ensure EMAIL_USER and EMAIL_PASS are configured.
