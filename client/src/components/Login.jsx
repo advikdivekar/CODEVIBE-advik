@@ -27,7 +27,7 @@ const Login = () => {
       setResponseMsg(response.data.message);
 
       if (response.data.success) {
-        login(response.data.user);
+        login(response.data.user, response.data.token);
         navigate("/Dashboard");
       }
     } catch (error) {

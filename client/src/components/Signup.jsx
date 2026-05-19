@@ -32,8 +32,7 @@ const SignUp = () => {
       setResponseMsg(response.data.message);
 
       if (response.data.success) {
-        // ✅ signup ke baad direct Dashboard me bhejna
-        login(response.data.user);
+        login(response.data.user, response.data.token);
         navigate("/Dashboard");
       }
     } catch (error) {

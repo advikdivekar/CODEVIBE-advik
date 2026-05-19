@@ -5,28 +5,51 @@ const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      return JSON.parse(localStorage.getItem("user"));
-    } catch (error) {
-      return null;
-    }
-  });
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
 
-  const login = (userData) => {
-    if (!userData) return;
+function loadAuthState() {
+  if (typeof window === "undefined") return { user: null, token: null };
+  try {
+    const token = localStorage.getItem("authToken");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (token && user && !isTokenExpired(token)) {
+      return { user, token };
+    }
+  } catch {
+    // ignore parse errors
+  }
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("user");
+  return { user: null, token: null };
+}
+
+export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState(() => loadAuthState());
+
+  const login = (userData, token) => {
+    if (!userData || !token) return;
+    localStorage.setItem("authToken", token);
     localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+    setAuthState({ user: userData, token });
   };
 
   const logout = () => {
+    localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    setUser(null);
+    setAuthState({ user: null, token: null });
   };
 
-  const value = useMemo(() => ({ user, login, logout }), [user]);
+  const value = useMemo(
+    () => ({ user: authState.user, token: authState.token, login, logout }),
+    [authState]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
